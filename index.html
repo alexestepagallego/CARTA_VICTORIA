@@ -132,7 +132,7 @@
         </div>
     </div>
 
-    <script type="module">
+    <script >
         const categorias = [
             { id: 'DESAYUNO', foto: 'imagenes/desayuno.jpeg' },
             { id: 'ENTRANTES', foto: 'imagenes/entrantes.jpeg' },
@@ -150,119 +150,7 @@
             { id: 'CAFE', foto: 'imagenes/cafe.jpeg' }
         ];
 
-         // 1. Importar Firebase desde la web (CDN)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-// 2. Tu configuración (Copiada de tu imagen)
-const firebaseConfig = {
-  apiKey: "AIzaSyC9c6LUf8l2r0qdhX_19XHJkbt62HKz5tg",
-  authDomain: "carta-victoria-3c286.firebaseapp.com",
-  projectId: "carta-victoria-3c286",
-  storageBucket: "carta-victoria-3c286.firebasestorage.app",
-  messagingSenderId: "562683726350",
-  appId: "1:562683726350:web:865a52fcd1827d19b24a5f"
-};
-
-// 3. Inicializar Firebase y la Base de Datos
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const platosRef = collection(db, "platos");
-
-// 4. Variable global para guardar los platos que vengan de la nube
-let platos = [];
-
-// 5. ESCUCHAR CAMBIOS EN TIEMPO REAL
-onSnapshot(platosRef, (snapshot) => {
-    platos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log("Datos actualizados desde la nube");
-    
-    // Si estamos en la vista de platos de una categoría, refrescamos el grid
-    const tituloActual = document.getElementById('titulo-actual').innerText;
-    if (!document.getElementById('vista-platos').classList.contains('hidden')) {
-        filtrar(tituloActual); 
-    }
-});
-
-
-        
-
-    function renderCategorias() {
-    const container = document.getElementById('contenedor-categorias-principal');
-    container.innerHTML = categorias.map(cat => `
-        <div onclick="filtrar('${cat.id}')" class="relative h-36 rounded-2xl overflow-hidden shadow-2xl border border-white/10 active:scale-95 transition-transform cursor-pointer">
-            <img src="${cat.foto}" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-60 bg-stone-700" alt="${cat.id}">
-            <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
-                <span class="text-white text-3xl font-serif-victoria italic tracking-[0.1em] uppercase">${cat.id}</span>
-            </div>
-        </div>
-    `).join('');
-}
-
-      function filtrar(cat) {
-    document.getElementById('vista-categorias').classList.add('hidden');
-    document.getElementById('vista-platos').classList.remove('hidden');
-    document.getElementById('btn-atras').classList.remove('hidden');
-    document.getElementById('header-title').classList.add('hidden');
-    document.getElementById('titulo-actual').innerText = cat;
-    const grid = document.getElementById('grid-platos');
-    grid.innerHTML = '';
-    const filtrados = platos.filter(p => p.categoria === cat);
-    if (filtrados.length === 0) {
-        grid.innerHTML = '<p class="col-span-2 text-center text-white/80 py-10 italic">Próximamente disponible...</p>';
-    } else {
-        filtrados.forEach(plato => {
-            grid.innerHTML += `
-                <div onclick="openDetail(${plato.id})" class="bg-white rounded-3xl shadow-lg overflow-hidden active:scale-95 transition-transform duration-200 text-center border-b-4 border-gold/20">
-                    <img src="${plato.foto}" loading="lazy" class="w-full h-36 object-cover bg-stone-200">
-                    <div class="p-4">
-                        <h4 class="font-serif-victoria font-bold text-base h-10 leading-tight flex items-center justify-center">${plato.nombre}</h4>
-                        <p class="gold font-bold text-lg mt-2">${plato.precio}</p>
-                    </div>
-                </div>`;
-        });
-    }
-    window.scrollTo(0, 0);
-}
-
-        function mostrarCategorias() {
-            document.getElementById('vista-categorias').classList.remove('hidden');
-            document.getElementById('vista-platos').classList.add('hidden');
-            document.getElementById('btn-atras').classList.add('hidden');
-            document.getElementById('header-title').classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-
-  function openDetail(id) {
-    const p = platos.find(x => x.id === id);
-    document.getElementById('detail-img').src = p.foto;
-    document.getElementById('detail-title').innerText = p.nombre;
-    document.getElementById('detail-price').innerText = p.precio;
-    document.getElementById('detail-ingredients').innerText = p.ingredients || p.ingredientes; // He añadido soporte para ambos nombres
-    
-    // CORRECCIÓN AQUÍ: cambiamos p.ale por p.alergenos
-    document.getElementById('detail-alergenos').innerHTML = p.alergenos ? p.alergenos.map(a => `<div class="w-12 h-12 rounded-full border border-stone-100 flex items-center justify-center bg-stone-50 text-xl shadow-inner">${a}</div>`).join('') : '';
-    
-    document.getElementById('dish-detail').classList.remove('translate-y-full');
-    document.body.style.overflow = 'hidden';
-}
-
-        function closeDetail() {
-            document.getElementById('dish-detail').classList.add('translate-y-full');
-            document.body.style.overflow = 'auto';
-        }
-
-        window.onload = renderCategorias;
-
-
-        async function migrarDatos() {
-    console.log("🚀 Iniciando subida...");
-
-    // ESTA ES LA VARIABLE QUE TIENE QUE TENER TUS DATOS:
-    const misPlatosViejos = [
-        // >>> PEGA AQUÍ TODO EL CONTENIDO DE TU LISTA ACTUAL <<<
-        // Desde el primer { id: 1... } hasta el último { id: 57... }
-       
+        const platos = [
             { id: 1, categoria: 'RACIONES', nombre: 'Ensaladilla rusa', precio: '10,00 €', foto: 'imagenes/ensaladilla.jpg', ingredientes: 'Patata, atún, variantes y nuestra mayonesa casera.', alergenos: ['🥚', '🐟'] },
     { id: 2, categoria: 'RACIONES', nombre: 'Salpicón de marisco', precio: '11,00 €', foto: 'platos/salpicon.webp', ingredientes: 'Marisco variado picado con vinagreta de la casa.', alergenos: ['🍤', '🐚'] },
     { id: 3, categoria: 'RACIONES', nombre: 'Patatas bravas', precio: '10,00 €', foto: 'imagenes/bravas.jpg', ingredientes: 'Patatas naturales con salsa brava picante.', alergenos: [] },
@@ -338,23 +226,79 @@ onSnapshot(platosRef, (snapshot) => {
     { id: 56, categoria: 'CARNES', nombre: 'Carrillada en salsa', precio: '13,00 €', foto: 'platos/carrillada1.webp', ingredientes: 'Carrilleras de cerdo estofadas a fuego lento en su propio jugo.', alergenos: ['🍷'] },
     { id: 57, categoria: 'CARNES', nombre: 'Escalope de pollo', precio: '9,50 €', foto: 'imagenes/escalope.jpg', ingredientes: 'Pechuga de pollo finamente empanada y frita.', alergenos: ['🌾', '🥚'] }
 ];
-        // ... y así con los 57 platos ...
-    
+        
 
-    for (const plato of misPlatosViejos) {
-        try {
-            // Esto envía cada objeto de tu lista a la colección "platos" de Firebase
-            await addDoc(platosRef, plato); 
-            console.log(`✅ Subido: ${plato.nombre}`);
-        } catch (error) {
-            console.error(`❌ Error en ${plato.nombre}:`, error);
-        }
-    }
-    alert("¡Felicidades! Todos tus platos ya viven en la nube.");
+        
+
+    function renderCategorias() {
+    const container = document.getElementById('contenedor-categorias-principal');
+    container.innerHTML = categorias.map(cat => `
+        <div onclick="filtrar('${cat.id}')" class="relative h-36 rounded-2xl overflow-hidden shadow-2xl border border-white/10 active:scale-95 transition-transform cursor-pointer">
+            <img src="${cat.foto}" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-60 bg-stone-700" alt="${cat.id}">
+            <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                <span class="text-white text-3xl font-serif-victoria italic tracking-[0.1em] uppercase">${cat.id}</span>
+            </div>
+        </div>
+    `).join('');
 }
 
-// Para que funcione, tienes que "llamar" a la función:
-//migrarDatos();
+      function filtrar(cat) {
+    document.getElementById('vista-categorias').classList.add('hidden');
+    document.getElementById('vista-platos').classList.remove('hidden');
+    document.getElementById('btn-atras').classList.remove('hidden');
+    document.getElementById('header-title').classList.add('hidden');
+    document.getElementById('titulo-actual').innerText = cat;
+    const grid = document.getElementById('grid-platos');
+    grid.innerHTML = '';
+    const filtrados = platos.filter(p => p.categoria === cat);
+    if (filtrados.length === 0) {
+        grid.innerHTML = '<p class="col-span-2 text-center text-white/80 py-10 italic">Próximamente disponible...</p>';
+    } else {
+        filtrados.forEach(plato => {
+            grid.innerHTML += `
+                <div onclick="openDetail(${plato.id})" class="bg-white rounded-3xl shadow-lg overflow-hidden active:scale-95 transition-transform duration-200 text-center border-b-4 border-gold/20">
+                    <img src="${plato.foto}" loading="lazy" class="w-full h-36 object-cover bg-stone-200">
+                    <div class="p-4">
+                        <h4 class="font-serif-victoria font-bold text-base h-10 leading-tight flex items-center justify-center">${plato.nombre}</h4>
+                        <p class="gold font-bold text-lg mt-2">${plato.precio}</p>
+                    </div>
+                </div>`;
+        });
+    }
+    window.scrollTo(0, 0);
+}
+
+        function mostrarCategorias() {
+            document.getElementById('vista-categorias').classList.remove('hidden');
+            document.getElementById('vista-platos').classList.add('hidden');
+            document.getElementById('btn-atras').classList.add('hidden');
+            document.getElementById('header-title').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+  function openDetail(id) {
+    const p = platos.find(x => x.id === id);
+    document.getElementById('detail-img').src = p.foto;
+    document.getElementById('detail-title').innerText = p.nombre;
+    document.getElementById('detail-price').innerText = p.precio;
+    document.getElementById('detail-ingredients').innerText = p.ingredients || p.ingredientes; // He añadido soporte para ambos nombres
+    
+    // CORRECCIÓN AQUÍ: cambiamos p.ale por p.alergenos
+    document.getElementById('detail-alergenos').innerHTML = p.alergenos ? p.alergenos.map(a => `<div class="w-12 h-12 rounded-full border border-stone-100 flex items-center justify-center bg-stone-50 text-xl shadow-inner">${a}</div>`).join('') : '';
+    
+    document.getElementById('dish-detail').classList.remove('translate-y-full');
+    document.body.style.overflow = 'hidden';
+}
+
+        function closeDetail() {
+            document.getElementById('dish-detail').classList.add('translate-y-full');
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onload = renderCategorias;
+
+
+      
     </script>
 
 
