@@ -230,43 +230,43 @@
 
         
 
-        function renderCategorias() {
-            const container = document.getElementById('contenedor-categorias-principal');
-            container.innerHTML = categorias.map(cat => `
-                <div onclick="filtrar('${cat.id}')" class="relative h-36 rounded-2xl overflow-hidden shadow-2xl border border-white/10 active:scale-95 transition-transform cursor-pointer">
-                    <img src="${cat.foto}" class="absolute inset-0 w-full h-full object-cover opacity-60 bg-stone-700" alt="${cat.id}">
-                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
-                        <span class="text-white text-3xl font-serif-victoria italic tracking-[0.1em] uppercase">${cat.id}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
+    function renderCategorias() {
+    const container = document.getElementById('contenedor-categorias-principal');
+    container.innerHTML = categorias.map(cat => `
+        <div onclick="filtrar('${cat.id}')" class="relative h-36 rounded-2xl overflow-hidden shadow-2xl border border-white/10 active:scale-95 transition-transform cursor-pointer">
+            <img src="${cat.foto}" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-60 bg-stone-700" alt="${cat.id}">
+            <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                <span class="text-white text-3xl font-serif-victoria italic tracking-[0.1em] uppercase">${cat.id}</span>
+            </div>
+        </div>
+    `).join('');
+}
 
-        function filtrar(cat) {
-            document.getElementById('vista-categorias').classList.add('hidden');
-            document.getElementById('vista-platos').classList.remove('hidden');
-            document.getElementById('btn-atras').classList.remove('hidden');
-            document.getElementById('header-title').classList.add('hidden');
-            document.getElementById('titulo-actual').innerText = cat;
-            const grid = document.getElementById('grid-platos');
-            grid.innerHTML = '';
-            const filtrados = platos.filter(p => p.categoria === cat);
-            if (filtrados.length === 0) {
-                grid.innerHTML = '<p class="col-span-2 text-center text-white/80 py-10 italic">Próximamente disponible...</p>';
-            } else {
-                filtrados.forEach(plato => {
-                    grid.innerHTML += `
-                        <div onclick="openDetail(${plato.id})" class="bg-white rounded-3xl shadow-lg overflow-hidden active:scale-95 transition-transform duration-200 text-center border-b-4 border-gold/20">
-                            <img src="${plato.foto}" class="w-full h-36 object-cover bg-stone-200">
-                            <div class="p-4">
-                                <h4 class="font-serif-victoria font-bold text-base h-10 leading-tight flex items-center justify-center">${plato.nombre}</h4>
-                                <p class="gold font-bold text-lg mt-2">${plato.precio}</p>
-                            </div>
-                        </div>`;
-                });
-            }
-            window.scrollTo(0, 0);
-        }
+      function filtrar(cat) {
+    document.getElementById('vista-categorias').classList.add('hidden');
+    document.getElementById('vista-platos').classList.remove('hidden');
+    document.getElementById('btn-atras').classList.remove('hidden');
+    document.getElementById('header-title').classList.add('hidden');
+    document.getElementById('titulo-actual').innerText = cat;
+    const grid = document.getElementById('grid-platos');
+    grid.innerHTML = '';
+    const filtrados = platos.filter(p => p.categoria === cat);
+    if (filtrados.length === 0) {
+        grid.innerHTML = '<p class="col-span-2 text-center text-white/80 py-10 italic">Próximamente disponible...</p>';
+    } else {
+        filtrados.forEach(plato => {
+            grid.innerHTML += `
+                <div onclick="openDetail(${plato.id})" class="bg-white rounded-3xl shadow-lg overflow-hidden active:scale-95 transition-transform duration-200 text-center border-b-4 border-gold/20">
+                    <img src="${plato.foto}" loading="lazy" class="w-full h-36 object-cover bg-stone-200">
+                    <div class="p-4">
+                        <h4 class="font-serif-victoria font-bold text-base h-10 leading-tight flex items-center justify-center">${plato.nombre}</h4>
+                        <p class="gold font-bold text-lg mt-2">${plato.precio}</p>
+                    </div>
+                </div>`;
+        });
+    }
+    window.scrollTo(0, 0);
+}
 
         function mostrarCategorias() {
             document.getElementById('vista-categorias').classList.remove('hidden');
@@ -276,16 +276,19 @@
             window.scrollTo(0, 0);
         }
 
-        function openDetail(id) {
-            const p = platos.find(x => x.id === id);
-            document.getElementById('detail-img').src = p.foto;
-            document.getElementById('detail-title').innerText = p.nombre;
-            document.getElementById('detail-price').innerText = p.precio;
-            document.getElementById('detail-ingredients').innerText = p.ingredientes;
-            document.getElementById('detail-alergenos').innerHTML = p.ale ? p.ale.map(a => `<div class="w-12 h-12 rounded-full border border-stone-100 flex items-center justify-center bg-stone-50 text-xl shadow-inner">${a}</div>`).join('') : '';
-            document.getElementById('dish-detail').classList.remove('translate-y-full');
-            document.body.style.overflow = 'hidden';
-        }
+  function openDetail(id) {
+    const p = platos.find(x => x.id === id);
+    document.getElementById('detail-img').src = p.foto;
+    document.getElementById('detail-title').innerText = p.nombre;
+    document.getElementById('detail-price').innerText = p.precio;
+    document.getElementById('detail-ingredients').innerText = p.ingredients || p.ingredientes; // He añadido soporte para ambos nombres
+    
+    // CORRECCIÓN AQUÍ: cambiamos p.ale por p.alergenos
+    document.getElementById('detail-alergenos').innerHTML = p.alergenos ? p.alergenos.map(a => `<div class="w-12 h-12 rounded-full border border-stone-100 flex items-center justify-center bg-stone-50 text-xl shadow-inner">${a}</div>`).join('') : '';
+    
+    document.getElementById('dish-detail').classList.remove('translate-y-full');
+    document.body.style.overflow = 'hidden';
+}
 
         function closeDetail() {
             document.getElementById('dish-detail').classList.add('translate-y-full');
