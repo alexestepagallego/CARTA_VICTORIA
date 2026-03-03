@@ -57,7 +57,7 @@
             class="h-[110px] relative top-[20px] translate-x-[8px] object-contain">
     </div>
     
-    <button id="btn-atras" onclick="mostrarCategorias()"
+    <button id="btn-atras" onclick="history.back()"
         class="hidden absolute left-4 text-xs bg-white/10 px-3 py-2 rounded-full border border-gold gold font-bold z-10">
         ← VOLVER
     </button>
@@ -304,6 +304,7 @@
                 </div>`;
         });
     }
+    history.pushState({ view: 'platos' }, "");
     window.scrollTo(0, 0);
 }
         function mostrarCategorias() {
@@ -367,6 +368,7 @@
 
     document.getElementById('dish-detail').classList.remove('translate-y-full');
     document.body.style.overflow = 'hidden';
+    history.pushState({ view: 'detalle' }, "");
 }
 
         function closeDetail() {
@@ -375,6 +377,27 @@
         }
 
         window.onload = renderCategorias;
+
+
+        window.onpopstate = function(event) {
+    const detailOpen = !document.getElementById('dish-detail').classList.contains('translate-y-full');
+    const platosOpen = !document.getElementById('vista-platos').classList.contains('hidden');
+
+    if (detailOpen) {
+        // Si el detalle está abierto, lo cerramos
+        document.getElementById('dish-detail').classList.add('translate-y-full');
+        document.body.style.overflow = 'auto';
+    } 
+    else if (platosOpen) {
+        // Si estamos viendo la lista de platos, volvemos a categorías
+        document.getElementById('vista-categorias').classList.remove('hidden');
+        document.getElementById('vista-platos').classList.add('hidden');
+        document.getElementById('btn-atras').classList.add('hidden');
+        document.getElementById('header-title').classList.remove('hidden');
+    }
+};
+
+
     </script>
 
 
