@@ -224,7 +224,31 @@
     { id: 54, categoria: 'CARNES', nombre: 'Solomillo al oporto', precio: '13,50 €', foto: 'imagenes/solomillo-oporto.jpg', ingredientes: 'Solomillo de cerdo con una elegante salsa de vino de Oporto.', alergenos: ['🍷'] },
     { id: 55, categoria: 'CARNES', nombre: 'Pechuga de pollo', precio: '9,00 €', foto: 'imagenes/pechuga-pollo.jpg', ingredientes: 'Filete de pechuga de pollo a la plancha, tierno y jugoso.', alergenos: [] },
     { id: 56, categoria: 'CARNES', nombre: 'Carrillada en salsa', precio: '13,00 €', foto: 'platos/carrillada1.webp', ingredientes: 'Carrilleras de cerdo estofadas a fuego lento en su propio jugo.', alergenos: ['🍷'] },
-    { id: 57, categoria: 'CARNES', nombre: 'Escalope de pollo', precio: '9,50 €', foto: 'imagenes/escalope.jpg', ingredientes: 'Pechuga de pollo finamente empanada y frita.', alergenos: ['🌾', '🥚'] }
+    { id: 57, categoria: 'CARNES', nombre: 'Escalope de pollo', precio: '9,50 €', foto: 'imagenes/escalope.jpg', ingredientes: 'Pechuga de pollo finamente empanada y frita.', alergenos: ['🌾', '🥚'] },
+    
+    //MENU
+   { 
+    id: 99, 
+    categoria: 'MENU', 
+    nombre: 'Menú del Día', 
+    precio: '12,50 €', 
+    foto: 'imagenes/menu.jpeg', 
+    // Nuevas secciones para el menú
+    primeros: [
+        { nombre: 'Salmorejo cordobés', alergenos: ['🌾', '🥚'] },
+        { nombre: 'Ensalada Victoria', alergenos: [] },
+        { nombre: 'Paella de marisco', alergenos: ['🍤', '🐚'] }
+    ],
+    segundos: [
+        { nombre: 'Lomo al Pedro Ximénez', alergenos: ['🍷'] },
+        { nombre: 'Bacalao frito', alergenos: ['🌾', '🐟'] },
+        { nombre: 'Pechuga de pollo a la plancha', alergenos: [] }
+    ],
+    incluye: '1 Bebida y 1 postre o 1 café.',
+    visible: true 
+}
+    
+
 ];
 
 
@@ -242,17 +266,29 @@
     `).join('');
 }
 
-      function filtrar(cat) {
+     function filtrar(cat) {
+    const filtrados = platos.filter(p => p.categoria === cat);
+
+    // LÓGICA ESPECIAL PARA EL MENÚ
+    if (cat === 'MENU' && filtrados.length > 0) {
+        // Si hay un menú en la lista, abrimos el detalle directamente
+        openDetail(filtrados[0].id);
+        return; // Salimos de la función para no cambiar de vista al fondo
+    }
+
+    // COMPORTAMIENTO NORMAL PARA EL RESTO DE CATEGORÍAS
     document.getElementById('vista-categorias').classList.add('hidden');
     document.getElementById('vista-platos').classList.remove('hidden');
     document.getElementById('btn-atras').classList.remove('hidden');
     document.getElementById('header-title').classList.add('hidden');
     document.getElementById('titulo-actual').innerText = cat;
+    
     const grid = document.getElementById('grid-platos');
     grid.innerHTML = '';
-    const filtrados = platos.filter(p => p.categoria === cat);
+    
     if (filtrados.length === 0) {
-        grid.innerHTML = '<p class="col-span-2 text-center text-white/80 py-10 italic">Próximamente disponible...</p>';
+        // Esto solo se mostrará si la categoría MENU está vacía
+        grid.innerHTML = '<p class="col-span-2 text-center text-white/80 py-10 italic">No hay menú disponible</p>';
     } else {
         filtrados.forEach(plato => {
             grid.innerHTML += `
@@ -267,7 +303,6 @@
     }
     window.scrollTo(0, 0);
 }
-
         function mostrarCategorias() {
             document.getElementById('vista-categorias').classList.remove('hidden');
             document.getElementById('vista-platos').classList.add('hidden');
@@ -281,11 +316,52 @@
     document.getElementById('detail-img').src = p.foto;
     document.getElementById('detail-title').innerText = p.nombre;
     document.getElementById('detail-price').innerText = p.precio;
-    document.getElementById('detail-ingredients').innerText = p.ingredients || p.ingredientes; // He añadido soporte para ambos nombres
     
-    // CORRECCIÓN AQUÍ: cambiamos p.ale por p.alergenos
-    document.getElementById('detail-alergenos').innerHTML = p.alergenos ? p.alergenos.map(a => `<div class="w-12 h-12 rounded-full border border-stone-100 flex items-center justify-center bg-stone-50 text-xl shadow-inner">${a}</div>`).join('') : '';
-    
+    const divIngredientes = document.getElementById('detail-ingredients');
+    const divAlergenos = document.getElementById('detail-alergenos');
+
+    if (p.categoria === 'MENU') {
+        // --- VISTA ESPECIAL PARA EL MENÚ ---
+        divAlergenos.innerHTML = ''; // Ocultamos los alérgenos generales abajo
+        
+        let menuHTML = `
+            <div class="text-left space-y-4">
+                <div>
+                    <h5 class="gold font-bold uppercase text-xs tracking-widest mb-2 border-b border-gold/20 pb-1">Primeros Platos</h5>
+                    <ul class="space-y-1">
+                        ${p.primeros.map(plato => `
+                            <li class="flex justify-between items-center text-sm italic text-stone-700">
+                                <span>${plato.nombre}</span>
+                                <span class="text-xs ml-2">${plato.alergenos.join(' ')}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="gold font-bold uppercase text-xs tracking-widest mb-2 border-b border-gold/20 pb-1">Segundos Platos</h5>
+                    <ul class="space-y-1">
+                        ${p.segundos.map(plato => `
+                            <li class="flex justify-between items-center text-sm italic text-stone-700">
+                                <span>${plato.nombre}</span>
+                                <span class="text-xs ml-2">${plato.alergenos.join(' ')}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                <p class="text-[10px] text-center pt-4 opacity-60 uppercase tracking-tighter">* ${p.incluye}</p>
+            </div>
+        `;
+        divIngredientes.innerHTML = menuHTML;
+
+    } else {
+        // --- VISTA NORMAL PARA PLATOS INDIVIDUALES ---
+        divIngredientes.innerText = p.ingredientes;
+        divAlergenos.innerHTML = p.alergenos ? p.alergenos.map(a => `
+            <div class="w-12 h-12 rounded-full border border-stone-100 flex items-center justify-center bg-stone-50 text-xl shadow-inner">
+                ${a}
+            </div>`).join('') : '';
+    }
+
     document.getElementById('dish-detail').classList.remove('translate-y-full');
     document.body.style.overflow = 'hidden';
 }
